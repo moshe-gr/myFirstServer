@@ -8,6 +8,7 @@ const userRouts = require('./routs/userRouts.js');
 var app = express();
 
 mongoose.connect(dbPath);
+console.log(dbPath);
 
 app.use(cors);
 app.use(express.json());
