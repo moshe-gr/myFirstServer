@@ -2,7 +2,7 @@ const UserModel = require('../models/userSchema.js');
 
 function userControler() {
     function createUser(req, res) {
-        if(!req.body.first_name || !req.body.last_name || !req.body.id || !req.body.passport || !req.body.telephon){
+        if(!req.body.first_name || !req.body.last_name || !req.body.id || !req.body.passport || !req.body.telephone){
             return res.status(400).send({});
         }
         var newUser = new UserModel(req.body);

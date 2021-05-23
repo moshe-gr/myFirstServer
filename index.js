@@ -10,7 +10,7 @@ var app = express();
 mongoose.connect(dbPath);
 console.log(dbPath);
 
-app.use(cors);
+app.use(cors());
 app.use(express.json());
 app.use('/api/users', userRouts);
-app.listen(port, console.log("Server up at port ", port));
+app.listen(port, console.log("Server up at port " + port));
