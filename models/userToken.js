@@ -7,7 +7,7 @@ function UserToken (isNew, token, roleNumber) {
         this.roleNumber = roleNumber;
         this.expirationTime = Date.now() + ttl;
         this.token = Encrypt.getEncrypt(
-            roleNumber + split+
+            roleNumber + split +
             this.expirationTime);
     } else {        
         this.token = token;

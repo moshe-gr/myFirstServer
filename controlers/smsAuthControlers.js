@@ -1,4 +1,5 @@
 const Nexmo = require('nexmo');
+const UserToken = require('../models/userToken.js');
 const nexmo = new Nexmo({
   apiKey: "f7b12139",
   apiSecret: "LOzFDfpg4FkK8gPS"
@@ -29,6 +30,9 @@ function smsAuthControler() {
       } else {
         if (result && result.status == '0') {
           //A status of 0 means success! Respond with 200: OK
+          //Create token for user
+          let userToken = new UserToken(true, null);
+          result.token = userToken.token;
           res.status(200).send(result);
           console.log('Account verified!')
         } else {

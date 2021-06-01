@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const userRouts = require('./routs/userRouts.js');
 const smsAuthRouts = require('./routs/smsAuthRoutes.js')
-const UserToken = require("./model/userToken.js");
+const UserToken = require("./models/userToken.js");
 
 var app = express();
 
