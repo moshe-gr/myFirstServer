@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const userRouts = require('./routs/userRouts.js');
 const smsAuthRouts = require('./routs/smsAuthRoutes.js')
+const UserToken = require("./model/userToken.js");
 
 var app = express();
 
@@ -14,5 +15,15 @@ console.log(dbPath);
 app.use(cors());
 app.use(express.json());
 app.use('/auth', smsAuthRouts);
+app.use('/api', (req, res, next) => {
+    let userToken = new UserToken(false, req.headers['x-access-token']);
+    if (userToken.isNotExpired) {
+        req.user = userToken;
+        next();
+    }
+    else {
+        res.status(401).send();
+    }
+})
 app.use('/api/users', userRouts);
 app.listen(port, console.log("Server up at port " + port));
