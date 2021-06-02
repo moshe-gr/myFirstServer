@@ -17,7 +17,7 @@ app.use(express.json());
 app.use('/auth', smsAuthRouts);
 app.use('/api', (req, res, next) => {
     let userToken = new UserToken(false, req.headers['x-access-token']);
-    if (userToken.isNotExpired) {
+    if (userToken.isNotExpired()) {
         req.user = userToken;
         next();
     }
