@@ -25,32 +25,36 @@ var userSchema = new schema({
     },
     pic: {
     },
-    age: {
-        type: Number
+    personal: {
+        age: {
+            type: Number
+        },
+        contry: {
+            type: String
+        },
+        city: {
+            type: String
+        },
+        academic_institution: {
+            type: String
+        }
     },
-    contry: {
-        type: String
-    },
-    city: {
-        type: String
-    },
-    graduation_year: {
-        type: Number
-    },
-    academic_institution: {
-        type: String
-    },
-    medical_institution: {
-        type: String
-    },
-    residency: {
-        type: String
-    },
-    department: {
-        type: String
-    },
-    year_in_residency: {
-        type: Number
+    professional: {
+        graduation_year: {
+            type: Number
+        },
+        medical_institution: {
+            type: String
+        },
+        residency: {
+            type: String
+        },
+        department: {
+            type: String
+        },
+        year_in_residency: {
+            type: Number
+        }
     }
 });
 
