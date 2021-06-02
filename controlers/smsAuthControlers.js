@@ -1,5 +1,6 @@
 const Nexmo = require('nexmo');
 const UserToken = require('../models/userToken.js');
+const UserModel = require('../models/userSchema.js');
 const nexmo = new Nexmo({
   apiKey: "f7b12139",
   apiSecret: "LOzFDfpg4FkK8gPS"
@@ -61,10 +62,24 @@ function smsAuthControler() {
       }
     });
   };
+
+  function authLogin(req, res) {
+    UserModel.findOne({ passport: req.params.passport }, (err, user) => {
+      if (err) {
+          return res.status(500).send();
+      }
+      if (!user) {
+          return res.status(404).send();
+      }
+      res.status(200).send(user);
+    })
+  }
+
   return {
     authRequest,
     authCheck,
-    authCancel
+    authCancel,
+    authLogin
   }
 }
 
