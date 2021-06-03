@@ -18,12 +18,14 @@ app.use(express.json());
 app.use('/auth', smsAuthRouts);
 app.use('/faceDetect', (req, res) => {
     let face = faceDetect(req.body.pic);
-    if (face == 1){
-        res.status(200).send();
-    }
-    else{
-        res.status(401).send({ msg: face > 1 ? "To many faces" : "Cant find face" })
-    }
+    face.then(result => {
+        if (result == 1) {
+            res.status(200).send();
+        }
+        else {
+            res.status(401).send({ msg: result > 1 ? "To many faces" : "Cant find face" })
+        }
+    })
 })
 app.use('/api', (req, res, next) => {
     let userToken = new UserToken(false, req.headers['x-access-token']);
