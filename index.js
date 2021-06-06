@@ -28,7 +28,7 @@ app.use('/faceDetect', (req, res) => {
             }
         },
         reject => {
-            res.status(500).send(reject);
+            res.status(500).send({ msg: reject });
         }
     )
 })
