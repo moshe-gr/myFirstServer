@@ -1,9 +1,11 @@
 const vision = require('@google-cloud/vision');
-const client = new vision.ImageAnnotatorClient();
+const client = new vision.ImageAnnotatorClient({
+    keyFilename: "C:/Users/LENOVO/myFirstServer/utils/effortless-edge-314610-4fd8e556e26f.json"
+});
 
 async function detectFaces(inputFile) {
     // Make a call to the Vision API to detect the faces
-    const request = {image: {content: inputFile}};
+    const request = { image: {content: inputFile} };
     const results = await client.faceDetection(request);
     const faces = results[0].faceAnnotations;
     const numFaces = faces.length;
