@@ -24,8 +24,7 @@ var userSchema = new schema({
         required: true
     },
     pic: {
-        type: Object,
-        required: true
+        type: Object
     },
     personal: {
         age: {
