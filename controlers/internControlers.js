@@ -1,11 +1,12 @@
 const InternModel = require('../models/internSchema.js');
+const UserModel = require('../models/userSchema.js');
 
 function internControler() {
     function createIntern(req, res) {
-        if(!req.body.user._id) {
+        if(!req.body._id) {
             return res.status(400).send({});
         }
-        var newIntern = new InternModel(req.body);
+        var newIntern = new InternModel(req.body.intern_info);
         newIntern.save((err, newDoc) => {
             if (err) {
                 var msg = "";
@@ -15,6 +16,15 @@ function internControler() {
                 return res.status(500).send({ msg });
             }
             res.status(201).send(newDoc);
+            UserModel.updateOne({ _id: req.body._id }, { $set: { internInfo: newDoc._id } }, (err, result) => {
+                if (err) {
+                    return res.status(500).send();
+                }
+                if (!result.n) {
+                    return res.status(404).send();
+                }
+                res.status(200).send();
+            })
         })
     }
     function updateIntern(req, res) {

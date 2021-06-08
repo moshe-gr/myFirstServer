@@ -4,9 +4,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const userRouts = require('./routs/userRouts.js');
-const smsAuthRouts = require('./routs/smsAuthRoutes.js')
+const smsAuthRouts = require('./routs/smsAuthRoutes.js');
 const UserToken = require('./models/userToken.js');
-const faceDetect = require('./utils/faceDetection.js')
+const faceDetect = require('./utils/faceDetection.js');
+const internRouts = require('./routs/internRouts.js');
 
 var app = express();
 
