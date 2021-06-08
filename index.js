@@ -43,4 +43,5 @@ app.use('/api', (req, res, next) => {
     }
 })
 app.use('/api/users', userRouts);
+app.use('api/interns', internRouts);
 app.listen(port, console.log("Server up at port " + port));
