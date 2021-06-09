@@ -15,7 +15,6 @@ function internControler() {
                 }
                 return res.status(500).send({ msg });
             }
-            res.status(201).send(newDoc);
             UserModel.updateOne({ _id: req.body._id }, { $set: { internInfo: newDoc._id } }, (err, result) => {
                 if (err) {
                     return res.status(500).send();
@@ -23,7 +22,7 @@ function internControler() {
                 if (!result.n) {
                     return res.status(404).send();
                 }
-                res.status(200).send();
+                res.status(201).send(newDoc);
             })
         })
     }
