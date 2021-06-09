@@ -26,7 +26,7 @@ var userSchema = new schema({
     pic: {
         type: Object
     },
-    roleNumber: {
+    role_number: {
         type: Number
     },
     internInfo: {
