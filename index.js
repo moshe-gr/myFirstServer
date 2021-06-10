@@ -15,7 +15,7 @@ mongoose.connect(dbPath);
 console.log(dbPath);
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
 app.use('/auth', smsAuthRouts);
 app.use('/faceDetect', (req, res) => {
     let face = faceDetect(req.body.pic);
