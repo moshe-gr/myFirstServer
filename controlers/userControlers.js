@@ -17,8 +17,9 @@ function userControler() {
             res.status(201).send(newDoc);
         })
     }
+
     function updateUser(req, res) {
-        UserModel.updateOne({ _id: req.params._id }, { $set: req.body }, (err, result) => {
+        UserModel.findByIdAndUpdate(req.params._id, { $set: req.body }, (err, result) => {
             if (err) {
                 return res.status(500).send();
             }
@@ -28,8 +29,9 @@ function userControler() {
             res.status(200).send();
         })
     }
+
     function deleteUser(req, res) {
-        UserModel.deleteOne({ _id: req.params._id }, (err, result) => {
+        UserModel.findByIdAndDelete(req.params._id, (err, result) => {
             if (err) {
                 return res.status(500).send();
             }
@@ -39,8 +41,9 @@ function userControler() {
             res.status(200).send();
         })
     }
+
     function getUser(req, res) {
-        UserModel.findOne({ _id: req.params._id }, (err, user) => {
+        UserModel.findById(req.params._id, (err, user) => {
             if (err) {
                 return res.status(500).send();
             }
@@ -50,6 +53,7 @@ function userControler() {
             res.status(200).send(user);
         })
     }
+
     function getAll(req, res) {
         UserModel.find((err, userList) => {
             if (err) {
@@ -58,6 +62,7 @@ function userControler() {
             res.status(200).send(userList);
         })
     }
+    
     return {
         createUser,
         updateUser,

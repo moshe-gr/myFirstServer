@@ -9,25 +9,24 @@ function internControler() {
         var newIntern = new InternModel(req.body.intern_info);
         newIntern.save((err, newDoc) => {
             if (err) {
-                var msg = "";
-                if (err.code == 11000) {
-                    msg = "Intern allready exists"
-                }
+                let msg = "";
                 return res.status(500).send({ msg });
             }
-            UserModel.updateOne({ _id: req.body._id }, { $set: { internInfo: newDoc._id } }, (err, result) => {
+            res.status(201).send(newDoc);
+            UserModel.findByIdAndUpdate(req.body._id, { $set: { internInfo: newDoc._id } }, (err, result, res) => {
                 if (err) {
                     return res.status(500).send();
                 }
                 if (!result.n) {
                     return res.status(404).send();
                 }
-                res.status(201).send(newDoc);
+                res.status(200).send();
             })
         })
     }
+
     function updateIntern(req, res) {
-        InternModel.updateOne({ _id: req.params._id }, { $set: req.body }, (err, result) => {
+        InternModel.findByIdAndUpdate(req.params._id, { $set: req.body }, (err, result) => {
             if (err) {
                 return res.status(500).send();
             }
@@ -37,8 +36,9 @@ function internControler() {
             res.status(200).send();
         })
     }
+
     function deleteIntern(req, res) {
-        InternModel.deleteOne({ _id: req.params._id }, (err, result) => {
+        InternModel.findByIdAndDelete(req.body._id, (err, result) => {
             if (err) {
                 return res.status(500).send();
             }
@@ -46,10 +46,20 @@ function internControler() {
                 return res.status(404).send();
             }
             res.status(200).send();
+            UserModel.findByIdAndUpdate(req.params._id, { $unset: { internInfo: 1 } }, (err, result, res) => {
+                if (err) {
+                    return res.status(500).send();
+                }
+                if (!result.n) {
+                    return res.status(404).send();
+                }
+                return res.status(200).send();
+            })
         })
     }
+
     function getIntern(req, res) {
-        InternModel.findOne({ _id: req.params._id }, (err, intern) => {
+        InternModel.findById(req.params._id, (err, intern) => {
             if (err) {
                 return res.status(500).send();
             }
@@ -59,6 +69,7 @@ function internControler() {
             res.status(200).send(intern);
         })
     }
+
     function getAll(req, res) {
         InternModel.find((err, internList) => {
             if (err) {
@@ -67,6 +78,7 @@ function internControler() {
             res.status(200).send(internList);
         })
     }
+    
     return {
         createIntern,
         updateIntern,
