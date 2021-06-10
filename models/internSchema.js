@@ -6,20 +6,20 @@ var internSchema = new schema({
         age: {
             type: Number
         },
-        contry: {
+        country: {
             type: String
         },
         city: {
             type: String
+        },
+        graduation_year: {
+            type: Number
         },
         academic_institution: {
             type: String
         }
     },
     professional: {
-        graduation_year: {
-            type: Number
-        },
         medical_institution: {
             type: String
         },
