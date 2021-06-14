@@ -4,7 +4,7 @@ const UserModel = require('../models/userSchema.js');
 function internControler() {
     function createIntern(req, res) {
         if(!req.body._id) {
-            return res.status(400).send({});
+            return res.status(400).send({msg: "id missing"});
         }
         var newIntern = new InternModel(req.body.intern_info);
         newIntern.save((err, newDoc) => {
@@ -12,8 +12,7 @@ function internControler() {
                 let msg = "";
                 return res.status(500).send({ msg });
             }
-            res.status(201).send(newDoc);
-            UserModel.findByIdAndUpdate(req.body._id, { $set: { internInfo: newDoc._id } }, (err, result, res) => {
+            UserModel.findByIdAndUpdate(req.body._id, { $set: { intern_info: newDoc._id } }, (err, result) => {
                 if (err) {
                     return res.status(500).send();
                 }
@@ -22,6 +21,7 @@ function internControler() {
                 }
                 res.status(200).send();
             })
+            res.status(201).send(newDoc);
         })
     }
 

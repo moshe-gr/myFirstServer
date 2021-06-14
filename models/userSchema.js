@@ -29,7 +29,7 @@ var userSchema = new schema({
     role_number: {
         type: Number
     },
-    internInfo: {
+    intern_info: {
         type: schema.Types.ObjectId,
         ref: "intern"
     }
