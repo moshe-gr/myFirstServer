@@ -30,9 +30,6 @@ function internControler() {
             if (err) {
                 return res.status(500).send();
             }
-            if (!result.n) {
-                return res.status(404).send();
-            }
             res.status(200).send();
         })
     }
