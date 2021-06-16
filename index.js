@@ -8,6 +8,7 @@ const smsAuthRouts = require('./routs/smsAuthRoutes.js');
 const UserToken = require('./models/userToken.js');
 const faceDetect = require('./utils/faceDetection.js');
 const internRouts = require('./routs/internRouts.js');
+const getUrl = require('./ccc');
 
 var app = express();
 
@@ -45,4 +46,5 @@ app.use('/api', (req, res, next) => {
 })
 app.use('/api/users', userRouts);
 app.use('/api/interns', internRouts);
+app.post('/awsupload', getUrl.getUrl);
 app.listen(port, console.log("Server up at port " + port));

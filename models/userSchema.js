@@ -24,7 +24,7 @@ var userSchema = new schema({
         required: true
     },
     pic: {
-        type: Object
+        type: String
     },
     role_number: {
         type: Number

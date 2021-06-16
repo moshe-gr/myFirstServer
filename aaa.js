@@ -24,14 +24,16 @@ const uploadFile = (fileName) => {
     });
 };
 
-s3.getObject({
+s3.getSignedUrl('getObject', {
     Bucket: 'moshefirstbucket',
-    Key: 'nogo.jpg' // File name you want to save as in S3
+    Key: '2af7f1332348506ad64b374d9c721', // File name you want to save as in S3
+    Expires: 60
 }, (err, data) => {
     if (err) {
         throw err;
     }
-    fs.appendFile("C:/Users/LENOVO/Desktop/New folder/logo.jpg", data.Body, (err)=>{console.log(err);});
+    console.log(data);
+    //fs.appendFile("C:/Users/LENOVO/Desktop/New folder/logo.jpg", data.Body, (err)=>{console.log(err);});
 })
 
 //uploadFile('logo.jpg');
