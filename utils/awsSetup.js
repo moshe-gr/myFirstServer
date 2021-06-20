@@ -8,35 +8,28 @@ const aws = require('aws-sdk');
 // * secretKey
 
 function s3Credentials(config, params) {
-  console.log('/s3_credentials1')
-
   return {
     endpoint_url: "https://" + config.bucket + ".s3.amazonaws.com",
     params: s3Params(config, params)
-
   }
 }
 
 // Returns the parameters that must be passed to the API call
 function s3Params(config, params) {
-      console.log('/s3Params1')
-      var credential = amzCredential(config);
-  var policy = s3UploadPolicy(config, params, credential);
-  var policyBase64 = new Buffer(JSON.stringify(policy)).toString('base64');
-  console.log('/s3Params2')
-  return {
-    key: params.filename,
-    acl: 'public-read',
-    success_action_status: '201',
-    policy: policyBase64,
-    "content-type": params.contentType,
-    'x-amz-algorithm': 'AWS4-HMAC-SHA256',
-    'x-amz-credential': credential,
-    'x-amz-date': dateString() + 'T000000Z',
-    'x-amz-signature': s3UploadSignature(config, policyBase64, credential)
-  }
-  console.log('/s3_credentials')
-
+    var credential = amzCredential(config);
+    var policy = s3UploadPolicy(config, params, credential);
+    var policyBase64 = new Buffer.from(JSON.stringify(policy)).toString('base64');
+    return {
+        key: params.filename,
+        acl: 'public-read',
+        success_action_status: '201',
+        policy: policyBase64,
+        "content-type": params.contentType,
+        'x-amz-algorithm': 'AWS4-HMAC-SHA256',
+        'x-amz-credential': credential,
+        'x-amz-date': dateString() + 'T000000Z',
+        'x-amz-signature': s3UploadSignature(config, policyBase64, credential)
+    }
 }
 
 function dateString() {
@@ -50,7 +43,6 @@ function amzCredential(config) {
 
 // Constructs the policy
 function s3UploadPolicy(config, params, credential) {
-  console.log('/s3UploadPolicy')
   return {
     // 5 minutes into the future
     expiration: new Date((new Date).getTime() + (5 * 60 * 1000)).toISOString(),
