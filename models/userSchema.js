@@ -26,12 +26,15 @@ var userSchema = new schema({
     pic: {
         type: String
     },
+    role: {
+        type: String
+    },
     role_number: {
         type: Number
     },
-    intern_info: {
+    more_info: {
         type: schema.Types.ObjectId,
-        ref: "intern"
+        refPath: 'role'
     }
 });
 

@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const schema = mongoose.Schema;
 
 var internSchema = new schema({
+    user: {
+        type: schema.Types.ObjectId,
+        ref: "user"
+    },
     personal: {
         age: {
             type: Number

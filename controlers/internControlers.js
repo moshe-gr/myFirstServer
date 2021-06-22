@@ -1,9 +1,10 @@
 const InternModel = require('../models/internSchema.js');
 const UserModel = require('../models/userSchema.js');
+const SupervisorModel = require('../models/supervisorSchema.js');
 
 function internControler() {
     function createIntern(req, res) {
-        if(!req.body._id) {
+        if(!req.body.intern_info.user) {
             return res.status(400).send({msg: "id missing"});
         }
         var newIntern = new InternModel(req.body.intern_info);
@@ -12,15 +13,19 @@ function internControler() {
                 let msg = "";
                 return res.status(500).send({ msg });
             }
-            UserModel.findByIdAndUpdate(req.body._id, { $set: { intern_info: newDoc._id } }, (err, result) => {
-                if (err) {
-                    return res.status(500).send();
+            UserModel.findByIdAndUpdate(
+                req.body.intern_info.user,
+                { $set: { more_info: newDoc._id } },
+                (err, result) => {
+                    if (err) {
+                        return res.status(500).send();
+                    }
                 }
-                if (!result.n) {
-                    return res.status(404).send();
-                }
-                res.status(200).send();
-            })
+            );
+            SupervisorModel.updateMany(
+                { medical_institution: req.body.intern_info.professional.medical_institution },
+                { $push: { students: req.body.intern_info.user } }
+            );
             res.status(201).send(newDoc);
         })
     }
@@ -30,7 +35,13 @@ function internControler() {
             if (err) {
                 return res.status(500).send();
             }
-            res.status(200).send();
+            if (req.body.intern_info.professional.medical_institution) {
+                SupervisorModel.updateMany(
+                    { medical_institution: req.body.intern_info.professional.medical_institution },
+                    { $push: { students: req.body.intern_info.user } }
+                );
+            }
+            res.status(200).send(result);
         })
     }
 
@@ -39,19 +50,16 @@ function internControler() {
             if (err) {
                 return res.status(500).send();
             }
-            if (!result.n) {
-                return res.status(404).send();
-            }
-            res.status(200).send();
             UserModel.findByIdAndUpdate(req.params._id, { $unset: { internInfo: 1 } }, (err, result, res) => {
                 if (err) {
                     return res.status(500).send();
                 }
-                if (!result.n) {
-                    return res.status(404).send();
-                }
-                return res.status(200).send();
-            })
+            });
+            SupervisorModel.updateMany(
+                { medical_institution: req.body.intern_info.professional.medical_institution },
+                { $pull: { students: req.body.intern_info.user } }
+            );
+            res.status(200).send(result);
         })
     }
 
@@ -60,7 +68,7 @@ function internControler() {
             if (err) {
                 return res.status(500).send();
             }
-            if (!Intern) {
+            if (!intern) {
                 return res.status(404).send();
             }
             res.status(200).send(intern);

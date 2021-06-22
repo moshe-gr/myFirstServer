@@ -78,7 +78,7 @@ function smsAuthControler() {
   };
 
   function authLogin(req, res) {
-    UserModel.findOne({ passport: req.params.passport }).populate('intern_info').exec(
+    UserModel.findOne({ passport: req.params.passport }).populate().exec(
       (err, user) => {
         if (err) {
           return res.status(500).send();
