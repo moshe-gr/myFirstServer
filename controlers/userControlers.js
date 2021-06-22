@@ -80,27 +80,24 @@ function userControler() {
                 if (err) {
                    return res.status(500).send(err);
                 }
-                console.log(req.body.medical_institution);
-                console.log(students);
                 students.forEach(data => newSupervisor.students.push(data.user));
-                console.log(newSupervisor);
-            }
-        ); 
-        newSupervisor.save((err, newDoc) => {
-            if (err) {
-                res.status(500).send();
-            }
-            UserModel.findByIdAndUpdate(
-                req.body.user,
-                { $set: { more_info: newDoc._id } },
-                (err, result) => {
+                newSupervisor.save((err, newDoc) => {
                     if (err) {
-                        res.status(500).send(err);
+                       return res.status(500).send();
                     }
-                }
-            );
-            res.status(201).send(newDoc);
-        });
+                    UserModel.findByIdAndUpdate(
+                        req.body.user,
+                        { $set: { more_info: newDoc._id } },
+                        (err, result) => {
+                            if (err) {
+                               return res.status(500).send(err);
+                            }
+                        }
+                    );
+                    res.status(201).send(newDoc);
+                });
+            }
+        );    
     }
 
     function createIntern(req, res) {
