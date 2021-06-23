@@ -43,15 +43,19 @@ function userControler() {
     }
 
     function getUser(req, res) {
-        UserModel.findById(req.params._id, (err, user) => {
-            if (err) {
-                return res.status(500).send();
+        UserModel.findById(req.params._id)
+        .populate('more_info')
+        .exec(
+            (err, user) => {
+                if (err) {
+                    return res.status(500).send();
+                }
+                if (!user) {
+                    return res.status(404).send();
+                }
+                res.status(200).send(user);
             }
-            if (!user) {
-                return res.status(404).send();
-            }
-            res.status(200).send(user);
-        })
+        )
     }
 
     function getAll(req, res) {

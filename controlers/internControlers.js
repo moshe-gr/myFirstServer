@@ -3,32 +3,6 @@ const UserModel = require('../models/userSchema.js');
 const SupervisorModel = require('../models/supervisorSchema.js');
 
 function internControler() {
-    function createIntern(req, res) {
-        if(!req.body.intern_info.user) {
-            return res.status(400).send({msg: "id missing"});
-        }
-        var newIntern = new InternModel(req.body.intern_info);
-        newIntern.save((err, newDoc) => {
-            if (err) {
-                let msg = "";
-                return res.status(500).send({ msg });
-            }
-            UserModel.findByIdAndUpdate(
-                req.body.intern_info.user,
-                { $set: { more_info: newDoc._id } },
-                (err, result) => {
-                    if (err) {
-                        return res.status(500).send();
-                    }
-                }
-            );
-            SupervisorModel.updateMany(
-                { medical_institution: req.body.intern_info.professional.medical_institution },
-                { $push: { students: req.body.intern_info.user } }
-            );
-            res.status(201).send(newDoc);
-        })
-    }
 
     function updateIntern(req, res) {
         InternModel.findByIdAndUpdate(req.params._id, { $set: req.body }, (err, result) => {
@@ -85,7 +59,6 @@ function internControler() {
     }
     
     return {
-        createIntern,
         updateIntern,
         deleteIntern,
         getIntern,

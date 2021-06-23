@@ -28,7 +28,7 @@ function smsAuthControler() {
     
   function authCheck(req, res) {
     if (req.body.code == '1357') {
-      let userToken = new UserToken(true, null);
+      let userToken = new UserToken(true, null, req.body.role_number);
       console.log(userToken.token);
       token = userToken.token;
       res.status(200).send({ token: token });
@@ -42,7 +42,7 @@ function smsAuthControler() {
             if (result && result.status == '0') {
               //A status of 0 means success! Respond with 200: OK
               //Create token for user
-              let userToken = new UserToken(true, null);
+              let userToken = new UserToken(true, null, req.body.role_number);
               result.token = userToken.token;
               res.status(200).send(result);
               console.log('Account verified!');

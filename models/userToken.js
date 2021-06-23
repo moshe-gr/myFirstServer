@@ -8,7 +8,8 @@ function UserToken (isNew, token, role_number) {
         this.expirationTime = Date.now() + ttl;
         this.token = Encrypt.getEncrypt(
             role_number + split +
-            this.expirationTime);
+            this.expirationTime
+        );
     } else {        
         this.token = token;
         var tokenStr = Encrypt.getDecrypt(token).split(split);

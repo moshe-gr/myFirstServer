@@ -8,7 +8,8 @@ var supervisorSchema = new schema({
     },
     students: {
         type: [schema.Types.ObjectId],
-        ref: 'user'
+        ref: 'user',
+        autopopulate: true
     },
     user: {
         type: schema.Types.ObjectId,
@@ -16,5 +17,7 @@ var supervisorSchema = new schema({
         required: true
     }
 })
+
+supervisorSchema.plugin(require('mongoose-autopopulate'));
 
 module.exports = mongoose.model('supervisor', supervisorSchema);
