@@ -6,9 +6,9 @@ const cors = require('cors');
 const userRouts = require('./routs/userRouts.js');
 const smsAuthRouts = require('./routs/smsAuthRoutes.js');
 const UserToken = require('./models/userToken.js');
-const faceDetect = require('./utils/faceDetection.js');
 const internRouts = require('./routs/internRouts.js');
 const awsControlers = require('./controlers/awsControlers');
+const faceDetectionControler = require('./controlers/faceDetectionControler.js');
 
 var app = express();
 
@@ -18,22 +18,7 @@ console.log(dbPath);
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 app.use('/auth', smsAuthRouts);
-app.use('/faceDetect', (req, res) => {
-    let face = faceDetect(req.body.pic);
-    face.then(
-        result => {
-            if (result == 1) {
-                res.status(200).send();
-            }
-            else {
-                res.status(401).send({ msg: result > 1 ? "To many faces" : "Cant find face" });
-            }
-        },
-        reject => {
-            res.status(500).send({ msg: reject });
-        }
-    )
-})
+app.post('/faceDetect', faceDetectionControler.faceDetection);
 app.use('/api', (req, res, next) => {
     let userToken = new UserToken(false, req.headers['x-access-token']);
     if (userToken.isNotExpired()) {
