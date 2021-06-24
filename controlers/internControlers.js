@@ -9,10 +9,15 @@ function internControler() {
             if (err) {
                 return res.status(500).send();
             }
-            if (req.body.intern_info.professional.medical_institution) {
+            if (req.body.professional) {
                 SupervisorModel.updateMany(
-                    { medical_institution: req.body.intern_info.professional.medical_institution },
-                    { $push: { students: req.body.intern_info.user } }
+                    { medical_institution: req.body.professional.medical_institution },
+                    { $push: { students: req.body.user } },
+                    (err, result) => {
+                        if (err) {
+                            return res.status(500).send();
+                        }
+                    }
                 );
             }
             res.status(200).send(result);
