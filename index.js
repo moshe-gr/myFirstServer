@@ -12,7 +12,7 @@ const faceDetectionControler = require('./controlers/faceDetectionControler.js')
 
 var app = express();
 
-mongoose.connect(dbPath);
+mongoose.connect(dbPath, { useNewUrlParser: true, useUnifiedTopology: true });
 console.log(dbPath);
 
 app.use(cors());
@@ -28,8 +28,8 @@ app.use('/api', (req, res, next) => {
     else {
         res.status(401).send();
     }
-})
+});
 app.use('/api/users', userRouts);
 app.use('/api/interns', internRouts);
-app.post('/awsupload', awsControlers.getUrl);
+app.post('/api/awsupload', awsControlers.getUrl);
 app.listen(port, console.log("Server up at port " + port));

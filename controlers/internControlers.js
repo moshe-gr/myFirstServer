@@ -1,27 +1,45 @@
 const InternModel = require('../models/internSchema.js');
 const UserModel = require('../models/userSchema.js');
 const SupervisorModel = require('../models/supervisorSchema.js');
+const mongoose = require('mongoose');
 
 function internControler() {
 
-    function updateIntern(req, res) {
-        InternModel.findByIdAndUpdate(req.params._id, { $set: req.body }, (err, result) => {
-            if (err) {
-                return res.status(500).send();
-            }
-            if (req.body.professional) {
-                SupervisorModel.updateMany(
-                    { medical_institution: req.body.professional.medical_institution },
-                    { $push: { students: req.body.user } },
-                    (err, result) => {
-                        if (err) {
-                            return res.status(500).send();
+    async function updateIntern(req, res) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+            InternModel.findByIdAndUpdate(req.params._id, { $set: req.body }, (err, result) => {
+                if (err) {
+                    return res.status(500).send();
+                }
+                if (req.body.professional) {
+                    SupervisorModel.updateMany(
+                        { medical_institution: req.body.professional.medical_institution },
+                        { $push: { students: req.body.user } },
+                        (err, result) => {
+                            if (err) {
+                                return res.status(500).send();
+                            }
                         }
-                    }
-                );
+                    );
+                    SupervisorModel.updateMany(
+                        { medical_institution: result.professional.medical_institution },
+                        { $pull: { students: req.body.user } },
+                        (err, result) => {
+                            if (err) {
+                                return res.status(500).send();
+                            }
+                        }
+                    );
+                }
+                res.status(200).send(result);
+            });
             }
-            res.status(200).send(result);
-        })
+        catch {
+            await session.abortTransaction();
+            session.endSession();
+        }
     }
 
     function deleteIntern(req, res) {
