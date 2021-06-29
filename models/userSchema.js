@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const schema = mongoose.Schema;
 
 var userSchema = new schema({
-    id: {
-        type: Number,
+    email: {
+        type: String,
         required: true
     },
     first_name: {
@@ -15,7 +15,7 @@ var userSchema = new schema({
         required: true
     },
     passport: {
-        type: Number,
+        type: String,
         required: true,
         unique: true
     },

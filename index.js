@@ -7,7 +7,7 @@ const userRouts = require('./routs/userRouts.js');
 const smsAuthRouts = require('./routs/smsAuthRoutes.js');
 const UserToken = require('./models/userToken.js');
 const internRouts = require('./routs/internRouts.js');
-const awsControlers = require('./controlers/awsControlers');
+const awsRouts = require('./routs/awsRouts.js');
 const faceDetectionControler = require('./controlers/faceDetectionControler.js');
 
 var app = express();
@@ -31,5 +31,5 @@ app.use('/api', (req, res, next) => {
 });
 app.use('/api/users', userRouts);
 app.use('/api/interns', internRouts);
-app.post('/api/awsupload', awsControlers.getUrl);
+app.use('/api/awsupload', awsRouts);
 app.listen(port, console.log("Server up at port " + port));

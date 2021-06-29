@@ -15,6 +15,9 @@ var supervisorSchema = new schema({
         type: schema.Types.ObjectId,
         ref: 'user',
         required: true
+    },
+    tests: {
+        type: [String]
     }
 })
 

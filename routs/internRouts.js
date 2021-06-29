@@ -1,7 +1,7 @@
 const express = require('express');
 const internControler = require('../controlers/internControlers.js');
 
-var internRouts = express.Router();
+const internRouts = express.Router();
 internRouts.put("/:_id", internControler.updateIntern);
 internRouts.delete("/:_id", internControler.deleteIntern);
 internRouts.get("/getAll", internControler.getAll);

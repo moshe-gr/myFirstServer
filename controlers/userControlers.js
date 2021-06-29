@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 function userControler() {
     function createUser(req, res) {
-        if(!req.body.first_name || !req.body.last_name || !req.body.id || !req.body.passport || !req.body.telephone || !req.body.pic){
+        if(!req.body.first_name || !req.body.last_name || !req.body.email || !req.body.passport || !req.body.telephone || !req.body.pic){
             return res.status(400).send({});
         }
         var newUser = new UserModel(req.body);

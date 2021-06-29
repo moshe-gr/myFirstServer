@@ -1,7 +1,7 @@
 const express = require('express');
 const userControler = require('../controlers/userControlers.js');
 
-var userRouts = express.Router();
+const userRouts = express.Router();
 userRouts.post("/create", userControler.createUser);
 userRouts.post("/createSupervisor", userControler.createSupervisor);
 userRouts.post("/createIntern", userControler.createIntern);

@@ -36,6 +36,15 @@ var internSchema = new schema({
         year_in_residency: {
             type: Number
         }
+    },
+    tests: {
+        done: {
+            type: [schema.Types.ObjectId],
+            ref: 'test'
+        },
+        todo: {
+            type: [String]
+        }
     }
 })
 
