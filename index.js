@@ -7,6 +7,7 @@ const userRouts = require('./routs/userRouts.js');
 const smsAuthRouts = require('./routs/smsAuthRoutes.js');
 const UserToken = require('./models/userToken.js');
 const internRouts = require('./routs/internRouts.js');
+const supervisorRouts = require('./routs/supervisorRouts.js');
 const awsRouts = require('./routs/awsRouts.js');
 const faceDetectionControler = require('./controlers/faceDetectionControler.js');
 
@@ -18,7 +19,6 @@ console.log(dbPath);
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 app.use('/auth', smsAuthRouts);
-app.post('/faceDetect', faceDetectionControler.faceDetection);
 app.use('/api', (req, res, next) => {
     let userToken = new UserToken(false, req.headers['x-access-token']);
     if (userToken.isNotExpired()) {
@@ -29,7 +29,9 @@ app.use('/api', (req, res, next) => {
         res.status(401).send();
     }
 });
+app.post('/api/faceDetect', faceDetectionControler.faceDetection);
 app.use('/api/users', userRouts);
 app.use('/api/interns', internRouts);
+app.use('/api/supervisors', supervisorRouts)
 app.use('/api/awsupload', awsRouts);
 app.listen(port, console.log("Server up at port " + port));
