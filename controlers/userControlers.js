@@ -1,6 +1,7 @@
 const UserModel = require('../models/userSchema.js');
 const SupervisorModel = require('../models/supervisorSchema.js');
 const InternModel = require('../models/internSchema.js');
+const TestModel = require('../models/testSchema.js');
 const mongoose = require('mongoose');
 
 function userControler() {
@@ -72,40 +73,64 @@ function userControler() {
         session.startTransaction();
         try {
             if (!req.body.medical_institution || !req.body.user) {
-                return res.status(400).send({msg: "Missing data"});
+                res.status(400).send({ msg: "Missing data" });
+                throw new Error();
             }
             const newSupervisor = new SupervisorModel(req.body);
-            InternModel.find(
-                {
-                    'professional.medical_institution' : req.body.medical_institution
-                },
-                {
-                    'user': 1,
-                    _id: 0
-                },
-                (err, students) => {
+            const newTest = new TestModel({ supervisor: req.body.user });
+            newTest.save(
+                (err, newTestDoc) => {
                     if (err) {
-                       return res.status(500).send({ msg: "can't add students" });
+                        res.status(500).send({ msg: "error creating tests" });
+                        throw new Error();
                     }
-                    students.forEach(data => newSupervisor.students.push(data.user));
-                    newSupervisor.save((err, newDoc) => {
-                        if (err) {
-                           return res.status(500).send({ msg: "can't create supervisor" });
-                        }
-                        UserModel.findByIdAndUpdate(
-                            req.body.user,
-                            { $set: { more_info: newDoc._id } },
-                            (err, result) => {
-                                if (err) {
-                                    res.status(500).send({ msg: "can't update user" });
-                                    throw new Error();
-                                }
+                    newSupervisor.tasks = newTestDoc._id;
+                    InternModel.find(
+                        {
+                            'professional.medical_institution' : req.body.medical_institution
+                        },
+                        {
+                            'user': 1,
+                            _id: 0
+                        },
+                        (err, students) => {
+                            if (err) {
+                                res.status(500).send({ msg: "can't add students" });
+                                throw new Error();
                             }
-                        );
-                        res.status(201).send(newDoc);
-                    });
+                            students.forEach(data => {
+                                newSupervisor.students.push(data.user);
+                                data.tasks = newTestDoc._id;
+                                data.save(
+                                    (err, newIntDoc) => {
+                                        if (err) {
+                                            res.status(500).send({ msg: "can't add test to interns" });
+                                            throw new Error();
+                                        }
+                                        newSupervisor.save((err, newSuperDoc) => {
+                                            if (err) {
+                                                res.status(500).send({ msg: "can't create supervisor" });
+                                                throw new Error();
+                                            }
+                                            UserModel.findByIdAndUpdate(
+                                                req.body.user,
+                                                { $set: { more_info: newSuperDoc._id } },
+                                                (err, result) => {
+                                                    if (err) {
+                                                        res.status(500).send({ msg: "can't update user" });
+                                                        throw new Error();
+                                                    }
+                                                }
+                                            );
+                                            res.status(201).send(newSuperDoc);
+                                        });
+                                    }
+                                )
+                            });
+                        }
+                    );    
                 }
-            );    
+            );
         }
         catch {
             await session.abortTransaction();
@@ -118,12 +143,14 @@ function userControler() {
         session.startTransaction();
         try {
             if(!req.body.user) {
-                return res.status(400).send({msg: "id missing"});
+                res.status(400).send({ msg: "id missing" });
+                throw new Error();
             }
             var newIntern = new InternModel(req.body);
             newIntern.save((err, newDoc) => {
                 if (err) {
-                    return res.status(500).send({ msg: "can't save" });
+                    res.status(500).send({ msg: "can't save" });
+                    throw new Error();
                 }
                 UserModel.findByIdAndUpdate(
                     req.body.user,

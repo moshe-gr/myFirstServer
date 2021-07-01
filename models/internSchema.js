@@ -37,14 +37,9 @@ var internSchema = new schema({
             type: Number
         }
     },
-    tests: {
-        done: {
-            type: [schema.Types.ObjectId],
-            ref: 'test'
-        },
-        todo: {
-            type: [String]
-        }
+    tasks: {
+        type: [schema.Types.ObjectId],
+        ref: 'test'
     }
 })
 

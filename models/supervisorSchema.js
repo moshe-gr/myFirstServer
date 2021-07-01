@@ -16,21 +16,10 @@ var supervisorSchema = new schema({
         ref: 'user',
         required: true
     },
-    tasks: [{
-        name: {
-            type: String
-        },
-        task: {
-            type: String
-        },
-        modified: {
-            type: Date,
-            default: Date.now()
-        },
-        file_url: {
-            type: String
-        }
-    }]
+    tasks: {
+        type: schema.Types.ObjectId,
+        ref: 'test'
+    }
 })
 
 supervisorSchema.plugin(require('mongoose-autopopulate'));

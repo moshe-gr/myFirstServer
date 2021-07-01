@@ -11,7 +11,8 @@ function internControler() {
         try {
             InternModel.findByIdAndUpdate(req.params._id, { $set: req.body }, (err, result) => {
                 if (err) {
-                    return res.status(500).send();
+                    res.status(500).send();
+                    throw new Error();
                 }
                 if (req.body.professional) {
                     SupervisorModel.updateMany(
@@ -19,7 +20,8 @@ function internControler() {
                         { $push: { students: req.body.user } },
                         (err, result) => {
                             if (err) {
-                                return res.status(500).send();
+                                res.status(500).send();
+                                throw new Error();
                             }
                         }
                     );
@@ -28,7 +30,8 @@ function internControler() {
                         { $pull: { students: req.body.user } },
                         (err, result) => {
                             if (err) {
-                                return res.status(500).send();
+                                res.status(500).send();
+                                throw new Error();
                             }
                         }
                     );

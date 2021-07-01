@@ -26,7 +26,7 @@ app.use('/api', (req, res, next) => {
         next();
     }
     else {
-        res.status(401).send();
+        res.status(401).send({ msg: "token expired" });
     }
 });
 app.post('/api/faceDetect', faceDetectionControler.faceDetection);
