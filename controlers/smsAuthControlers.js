@@ -12,11 +12,13 @@ function smsAuthControler() {
       (err, result) => {
         if (err) {
           res.status(500).send(err);
-        } else {
+        }
+        else {
           if (result && result.status == '0') {
             //A status of 0 means success! Respond with 200: OK
             res.status(200).send(result);
-          } else {
+          }
+          else {
             //A status other than 0 means that something is wrong with the request. Respond with 400: Bad Request
             //The rest of the status values can be found here: https://developer.nexmo.com/api/verify#status-values
             res.status(400).send(result);
@@ -31,14 +33,15 @@ function smsAuthControler() {
       let userToken = new UserToken(true, null, req.body.role_number);
       console.log(userToken.token);
       token = userToken.token;
-      res.status(200).send({ token: token });
+      return res.status(200).send({ token: token });
     }
     else {
       nexmo.verify.check({ request_id: req.body.request_id, code: req.body.code },
         (err, result) => {
           if (err) {
             res.status(500).send(err);
-          } else {
+          }
+          else {
             if (result && result.status == '0') {
               //A status of 0 means success! Respond with 200: OK
               //Create token for user
@@ -46,7 +49,8 @@ function smsAuthControler() {
               result.token = userToken.token;
               res.status(200).send(result);
               console.log('Account verified!');
-            } else {
+            }
+            else {
               //A status other than 0 means that something is wrong with the request. Respond with 400: Bad Request
               //The rest of the status values can be found here: https://developer.nexmo.com/api/verify#status-values
               res.status(400).send(result);
@@ -78,13 +82,13 @@ function smsAuthControler() {
   };
 
   function authLogin(req, res) {
-    UserModel.findOne({ passport: req.params.passport }).populate('more_info').exec(
+    UserModel.findOne({ passport: req.params.passport },
       (err, user) => {
         if (err) {
-          return res.status(500).send();
+          return res.status(500).send(err);
         }
         if (!user) {
-          return res.status(404).send();
+          return res.status(404).send({ msg: "not found" });
         }
         res.status(200).send(user);
       }

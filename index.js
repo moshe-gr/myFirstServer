@@ -9,9 +9,10 @@ const UserToken = require('./models/userToken.js');
 const internRouts = require('./routs/internRouts.js');
 const supervisorRouts = require('./routs/supervisorRouts.js');
 const awsRouts = require('./routs/awsRouts.js');
+const testRouts = require('./routs/testRouts.js');
 const faceDetectionControler = require('./controlers/faceDetectionControler.js');
 
-var app = express();
+const app = express();
 
 mongoose.connect(dbPath, { useNewUrlParser: true, useUnifiedTopology: true });
 console.log(dbPath);
@@ -34,4 +35,5 @@ app.use('/api/users', userRouts);
 app.use('/api/interns', internRouts);
 app.use('/api/supervisors', supervisorRouts)
 app.use('/api/awsupload', awsRouts);
+app.use('/api/tests', testRouts);
 app.listen(port, console.log("Server up at port " + port));

@@ -25,7 +25,7 @@ function userControler() {
     function updateUser(req, res) {
         UserModel.findByIdAndUpdate(req.params._id, { $set: req.body }, (err, result) => {
             if (err) {
-                return res.status(500).send();
+                return res.status(500).send(err);
             }
             res.status(200).send(result);
         })
@@ -34,10 +34,10 @@ function userControler() {
     function deleteUser(req, res) {
         UserModel.findByIdAndDelete(req.params._id, (err, result) => {
             if (err) {
-                return res.status(500).send();
+                return res.status(500).send(err);
             }
             if (!result.n) {
-                return res.status(404).send();
+                return res.status(404).send({ msg: "not found" });
             }
             res.status(200).send(result);
         })
@@ -49,10 +49,10 @@ function userControler() {
         .exec(
             (err, user) => {
                 if (err) {
-                    return res.status(500).send();
+                    return res.status(500).send(err);
                 }
                 if (!user) {
-                    return res.status(404).send();
+                    return res.status(404).send({ msg: "not found" });
                 }
                 res.status(200).send(user);
             }
@@ -60,9 +60,12 @@ function userControler() {
     }
 
     function getAll(req, res) {
+        if (req.user.role_number > 1) { //not admin
+            return res.status(403).send({ msg: "forbiden access" })
+        }
         UserModel.find((err, userList) => {
             if (err) {
-                return res.status(500).send();
+                return res.status(500).send(err);
             }
             res.status(200).send(userList);
         })
@@ -89,10 +92,6 @@ function userControler() {
                         {
                             'professional.medical_institution': req.body.medical_institution
                         },
-                        {
-                            'user': 1,
-                            _id: 0
-                        },
                         (err, students) => {
                             if (err) {
                                 res.status(500).send({ msg: "can't add students" });
@@ -110,25 +109,24 @@ function userControler() {
                                     }
                                 );
                             });
-                        }
-                    ).then(
-                        newSupervisor.save((err, newSuperDoc) => {
-                            if (err) {
-                                res.status(500).send({ msg: "can't create supervisor" });
-                                throw new Error();
-                            }
-                            UserModel.findByIdAndUpdate(
-                                req.body.user,
-                                { $set: { more_info: newSuperDoc._id } },
-                                (err, result) => {
-                                    if (err) {
-                                        res.status(500).send({ msg: "can't update user" });
-                                        throw new Error();
-                                    }
+                            newSupervisor.save((err, newSuperDoc) => {
+                                if (err) {
+                                    res.status(500).send({ msg: "can't create supervisor" });
+                                    throw new Error();
                                 }
-                            );
-                            res.status(201).send(newSuperDoc);
-                        })
+                                UserModel.findByIdAndUpdate(
+                                    req.body.user,
+                                    { $set: { more_info: newSuperDoc._id } },
+                                    (err, result) => {
+                                        if (err) {
+                                            res.status(500).send({ msg: "can't update user" });
+                                            throw new Error();
+                                        }
+                                        res.status(201).send(newSuperDoc);
+                                    }
+                                );
+                            });
+                        }
                     );
                 }
             );
@@ -147,7 +145,7 @@ function userControler() {
                 res.status(400).send({ msg: "id missing" });
                 throw new Error();
             }
-            var newIntern = new InternModel(req.body);
+            const newIntern = new InternModel(req.body);
             SupervisorModel.find(
                 { medical_institution: req.body.professional.medical_institution },
                 (err, resultList) => {
@@ -167,25 +165,24 @@ function userControler() {
                             }
                         )
                     });
-                }
-            ).then(
-                newIntern.save((err, newDoc) => {
-                    if (err) {
-                        res.status(500).send({ msg: "can't save" });
-                        throw new Error();
-                    }
-                    UserModel.findByIdAndUpdate(
-                        req.body.user,
-                        { $set: { more_info: newDoc._id } },
-                        (err, result) => {
-                            if (err) {
-                                res.status(500).send({ msg: "can't update user" });
-                                throw new Error();
-                            }
+                    newIntern.save((err, newDoc) => {
+                        if (err) {
+                            res.status(500).send({ msg: "can't save" });
+                            throw new Error();
                         }
-                    );
-                    res.status(201).send(newDoc);
-                })
+                        UserModel.findByIdAndUpdate(
+                            req.body.user,
+                            { $set: { more_info: newDoc._id } },
+                            (err, result) => {
+                                if (err) {
+                                    res.status(500).send({ msg: "can't update user" });
+                                    throw new Error();
+                                }
+                            }
+                        );
+                        res.status(201).send(newDoc);
+                    });
+                }
             );
         }
         catch {
