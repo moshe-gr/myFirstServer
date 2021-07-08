@@ -19,6 +19,10 @@ var supervisorSchema = new schema({
     tasks: {
         type: schema.Types.ObjectId,
         ref: 'test'
+    },
+    done: {
+        type: [schema.Types.ObjectId],
+        ref: 'answer'
     }
 })
 

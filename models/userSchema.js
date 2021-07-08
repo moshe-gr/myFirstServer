@@ -24,13 +24,15 @@ var userSchema = new schema({
         required: true
     },
     pic: {
-        type: String
+        type: String,
+        required: true
     },
     role: {
         type: String
     },
     role_number: {
-        type: Number
+        type: Number,
+        required: true
     },
     more_info: {
         type: schema.Types.ObjectId,

@@ -1,7 +1,6 @@
+const { S3 } = require('aws-sdk');
 const AWS = require('aws-sdk');
-const s3 = require('../utils/awsSetup');
-
-
+const awsSetup = require('../utils/awsSetup');
 
 
 const s3Config = {
@@ -18,15 +17,34 @@ function filesController() {
 
   function getUrl(req, res) {
       if (req.body.filename) {
-          let s3cred = s3.s3Credentials(s3Config, { filename: req.body.filename, contentType: req.body.content_type });
+        let s3cred = awsSetup.s3Credentials(
+          s3Config,
+          { filename: req.body.filename, contentType: req.body.content_type }
+        );
           res.json(s3cred);
       } else {
         res.status(400).send({ msg: 'filename is required' });
       }
   }
 
+  function deleteFile(req, res) {
+    if (req.user > 2) {
+      return res.status(403).send({ msg: 'request denied' });
+    }
+    new S3().deleteObject(
+      { Key: req.params.name, Bucket: 'moshefirstbucket' },
+      (err, data) => {
+        if (err) {
+          return res.status(500).send(err);
+        }
+        res.status(200).send(data);
+      }
+    );
+  }
+
   return {
-      getUrl
+    getUrl,
+    deleteFile
   }
 
 }

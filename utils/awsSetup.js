@@ -1,4 +1,3 @@
-const crypto = require('crypto');
 const aws = require('aws-sdk');
 // This is the entry function that produces data for the frontend
 // config is hash of S3 configuration:
