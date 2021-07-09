@@ -55,13 +55,11 @@ function testControler() {
 
     function getAllInternTests(req, res) {
         InternModel.findById(req.params._id, { tasks: 1, _id: 0 })
-            .populate({
-                path: 'tasks', populate: {
-                    path: 'supervisor', model: 'user', populate: {
-                        path: 'more_info', model: 'supervisor'
-                    }
-                }
-            })
+        .populate({
+            path: 'tasks', populate: {
+                path: 'supervisor', model: 'user'
+            }
+        })
         .exec(
             (err, tests) => {
                 if (err) {
