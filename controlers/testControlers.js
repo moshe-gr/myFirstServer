@@ -55,7 +55,13 @@ function testControler() {
 
     function getAllInternTests(req, res) {
         InternModel.findById(req.params._id, { tasks: 1, _id: 0 })
-            .populate({ path: 'tasks', populate:{  path:'supervisor', model: 'user', populate: {path: 'more_info', model: 'supervisor'} }})
+            .populate({
+                path: 'tasks', populate: {
+                    path: 'supervisor', model: 'user', populate: {
+                        path: 'more_info', model: 'supervisor'
+                    }
+                }
+            })
         .exec(
             (err, tests) => {
                 if (err) {
@@ -90,7 +96,13 @@ function testControler() {
             return res.status(403).send({ msg: "denied" });
         }
         SupervisorModel.findById(req.params._id, { done: 1, _id: 0})
-        .populate('done')
+            .populate({
+                path: 'done', populate: {
+                    path: 'intern', model: 'user', populate: {
+                        path: 'more_info', model: 'intern'
+                    }
+                }
+            })
         .exec(
             (err, tests) => {
                 if (err) {
