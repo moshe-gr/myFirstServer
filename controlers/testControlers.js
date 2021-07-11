@@ -115,7 +115,19 @@ function testControler() {
     }
 
     function markTest(req, res) {
-        
+        if (req.user > 2) {
+            return res.status(403).send({ msg: "denied" });
+        }
+        AnswerModel.updateOne(
+            { _id: req.body._id, "done.file_url": req.body.done.file_url },
+            { $set: { "done.$.result": req.body.done.result } },
+            (err, result) => {
+                if (err) {
+                    return res.status(500).send(err);
+                }
+                res.status(200).send(result); 
+            }
+        );
     }
 
     function deleteTest(req, res) {
@@ -141,6 +153,7 @@ function testControler() {
         getAllInternTests,
         getAllInternDone,
         getAllSupervisorDone,
+        markTest,
         deleteTest
     }
 

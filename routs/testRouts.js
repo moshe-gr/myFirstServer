@@ -8,6 +8,7 @@ testRouts.get("/getAllInternDone/:_id", testControler.getAllInternDone);
 testRouts.get("/getAllSupervisorDone/:_id", testControler.getAllSupervisorDone);
 testRouts.put("/addTest", testControler.addTest);
 testRouts.put("/addDone", testControler.addDone);
+testRouts.put("/markTest", testControler.markTest);
 testRouts.put("/delete", testControler.deleteTest);
 
 module.exports = testRouts;

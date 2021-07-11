@@ -8,12 +8,22 @@ const answerSchema = new schema({
     },
     done: [{
         test: {
-            type: schema.Types.ObjectId,
-            ref: 'test',
-            autopopulate: true
+            name: {
+                type: String,
+                requierd: true
+            },
+            modified: {
+                type: Number,
+                requierd: true
+            },
+            file_url: {
+                type: String,
+                requierd: true
+            }
         },
         file_url: {
-            type: String
+            type: String,
+            requierd: true
         },
         result: {
             type: Number

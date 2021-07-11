@@ -18,7 +18,8 @@ const testSchema = new schema({
             default: Date.now()
         },
         file_url: {
-            type: String
+            type: String,
+            requierd: true
         }
     }]
 })
