@@ -2,36 +2,72 @@ const InternModel = require('../models/internSchema.js');
 const SupervisorModel = require('../models/supervisorSchema.js');
 const TestModel = require('../models/testSchema.js');
 const AnswerModel = require('../models/answerSchema.js');
+const mongoose = require('mongoose');
 
 function testControler() {
 
-    function addTest(req, res) {
+    async function addTest(req, res) {
         if (req.user > 2) {
             return res.status(403).send({ msg: "denied" });
         }
-        TestModel.findByIdAndUpdate(
-            req.body._id,
-            { $push: { tasks: req.body.task } },
-            (err, doc) => {
-                if (err) {
-                    res.status(500).send({ msg: "faild to add test" });
-                }
-                res.status(200).send(doc);
-            }
-        );
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+            const newTestDoc = await new TestModel(req.body).save();
+            const doc = await SupervisorModel.findOneAndUpdate(
+                { user: req.body.supervisor },
+                { $push: { tasks: newTestDoc._id } }
+            );
+            doc.students.forEach(async intern => {
+                await InternModel.updateOne({ user: intern }, { $push: { tasks: newTestDoc._id } });
+            });
+            res.status(201).send(newTestDoc);
+        }
+        catch {
+            await session.abortTransaction();
+            session.endSession();
+            res.status(500).send({ msg: "blabla" });
+        }
     }
 
-    function addDone(req, res) {
-        AnswerModel.findByIdAndUpdate(
-            req.body._id,
-            { $push: { done: { file_url: req.body.file_url, test: req.body.test } } },
-            (err, doc) => {
-                if (err) {
-                    res.status(500).send({ msg: "faild to add answers" });
+    async function addDone(req, res) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+            await new AnswerModel(req.body).save().then(
+                newAnsDoc => {
+                    InternModel.findOneAndUpdate(
+                        { user: req.body.intern },
+                        { $push: { done: newAnsDoc._id } }
+                    ).then(
+                        () => {
+                            SupervisorModel.updateOne(
+                                { tasks: req.body.test },
+                                { $push: { done: newAnsDoc._id } }
+                            ).then(
+                                () => res.status(201).send(newAnsDoc),
+                                () => {
+                                    res.status(500).send({ msg: "can't add done to supervisor" });
+                                    throw new Error();
+                                }
+                            );
+                        },
+                        () => {
+                            res.status(500).send({ msg: "can't add done" });
+                            throw new Error();
+                        }
+                    );
+                 },
+                () => {
+                    res.status(500).send({ msg: "can't create done" });
+                    throw new Error();
                 }
-                res.status(200).send(doc);
-            }
-        );
+            );
+        }
+        catch {
+            await session.abortTransaction();
+            session.endSession();
+        }
     }
 
     function getAllSupervisorTests(req, res) {
@@ -57,7 +93,9 @@ function testControler() {
         InternModel.findById(req.params._id, { tasks: 1, _id: 0 })
         .populate({
             path: 'tasks', populate: {
-                path: 'supervisor', model: 'user'
+                path: 'supervisor', model: 'user', populate: {
+                    path: 'more_info', model: 'supervisor'
+                }
             }
         })
         .exec(
@@ -75,7 +113,11 @@ function testControler() {
 
     function getAllInternDone(req, res) {     
         InternModel.findById(req.params._id, { done: 1, _id: 0})
-        .populate('done')
+            .populate({
+                path: 'done', populate: {
+                    path: 'test', model: 'test'
+                }
+            })
         .exec(
             (err, tests) => {
                 if (err) {
@@ -100,7 +142,7 @@ function testControler() {
                         path: 'more_info', model: 'intern'
                     }
                 }
-            })
+            }).populate({ path: 'test', model: 'test' })
         .exec(
             (err, tests) => {
                 if (err) {
@@ -118,32 +160,50 @@ function testControler() {
         if (req.user > 2) {
             return res.status(403).send({ msg: "denied" });
         }
-        AnswerModel.updateOne(
-            { _id: req.body._id, "done.file_url": req.body.done.file_url },
-            { $set: { "done.$.result": req.body.done.result } },
-            (err, result) => {
-                if (err) {
-                    return res.status(500).send(err);
-                }
-                res.status(200).send(result); 
-            }
-        );
-    }
-
-    function deleteTest(req, res) {
-        if (req.user > 2) {
-            return res.status(403).send({ msg: "denied" });
-        }
-        TestModel.findByIdAndUpdate(
+        AnswerModel.findByIdAndUpdate(
             req.body._id,
-            { $pull: { tasks: { file_url: req.body.file_url } } },
+            { $set: { result: req.body.result } },
             (err, doc) => {
                 if (err) {
                     return res.status(500).send(err);
                 }
-                res.status(200).send(doc);
+                res.status(200).send(doc); 
             }
         );
+    }
+
+    async function deleteTest(req, res) {
+        if (req.user > 2) {
+            return res.status(403).send({ msg: "denied" });
+        }
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+            await TestModel.findByIdAndDelete(req.params._id).then(
+                removedTestDoc => {
+                    SupervisorModel.findOneAndUpdate(
+                        { user: removedTestDoc.supervisor },
+                        { $pull: { tasks: removedTestDoc._id } }
+                    ).populate('students', 'tasks').updateMany(
+                        { $pull: { 'tasks': removedTestDoc._id } }
+                    ).then(
+                        () => res.status(200).send(removedTestDoc),
+                        () => {
+                            res.status(500).send({ msg: "can't remove test" });
+                            throw new Error();
+                        }
+                    );
+                },
+                () => {
+                    res.status(500).send({ msg: "can't delete test" });
+                    throw new Error();
+                }
+            );
+        }
+        catch {
+            await session.abortTransaction();
+            session.endSession();
+        }
     }
 
     return {

@@ -5,23 +5,21 @@ const testSchema = new schema({
     supervisor: {
         type: schema.Types.ObjectId,
         ref: 'user'
+    },    
+    name: {
+        type: String
     },
-    tasks: [{
-        name: {
-            type: String
-        },
-        task: {
-            type: String
-        },
-        modified: {
-            type: Number,
-            default: Date.now()
-        },
-        file_url: {
-            type: String,
-            requierd: true
-        }
-    }]
+    task: {
+        type: String
+    },
+    modified: {
+        type: Number,
+        default: Date.now()
+    },
+    file_url: {
+        type: String,
+        requierd: true
+    } 
 })
 
 module.exports = mongoose.model('test', testSchema);

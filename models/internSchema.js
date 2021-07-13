@@ -42,7 +42,7 @@ var internSchema = new schema({
         ref: 'test'
     },
     done: {
-        type: schema.Types.ObjectId,
+        type: [schema.Types.ObjectId],
         ref: 'answer'
     }
 })

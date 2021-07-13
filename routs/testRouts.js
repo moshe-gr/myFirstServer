@@ -9,6 +9,6 @@ testRouts.get("/getAllSupervisorDone/:_id", testControler.getAllSupervisorDone);
 testRouts.put("/addTest", testControler.addTest);
 testRouts.put("/addDone", testControler.addDone);
 testRouts.put("/markTest", testControler.markTest);
-testRouts.put("/delete", testControler.deleteTest);
+testRouts.delete("/delete/:_id", testControler.deleteTest);
 
 module.exports = testRouts;
