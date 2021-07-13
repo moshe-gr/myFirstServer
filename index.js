@@ -19,6 +19,7 @@ console.log(dbPath);
 
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
+app.get('', (req, res)=>{res.status(200).send('blabla heroku')})
 app.use('/auth', smsAuthRouts);
 app.use('/api', (req, res, next) => {
     let userToken = new UserToken(false, req.headers['x-access-token']);
