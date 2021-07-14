@@ -16,15 +16,15 @@ AWS.config.logger = console;
 function filesController() {
 
   function getUrl(req, res) {
-      if (req.body.filename) {
-        let s3cred = awsSetup.s3Credentials(
-          s3Config,
-          { filename: req.body.filename, contentType: req.body.content_type }
-        );
-          res.json(s3cred);
-      } else {
-        res.status(400).send({ msg: 'filename is required' });
-      }
+    if (req.body.filename) {
+      let s3cred = awsSetup.s3Credentials(
+        s3Config,
+        { filename: req.body.filename, contentType: req.body.content_type }
+      );
+        res.json(s3cred);
+    } else {
+      res.status(400).send({ msg: 'filename is required' });
+    }
   }
 
   function deleteFile(req, res) {

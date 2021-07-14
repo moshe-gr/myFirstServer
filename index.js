@@ -1,5 +1,5 @@
 const port = process.env.PORT || 8080;
-const dbPath = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/myFirst";
+const dbPath = process.env.MONGO_URI || "mongodb+srv://moshegreenberg:moshe@cluster0.16ljx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
