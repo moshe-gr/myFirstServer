@@ -38,6 +38,7 @@ bower_components
 build/Release
 
 # Dependency directories
+/effortless-edge-314610-4fd8e556e26f.json
 node_modules/
 jspm_packages/
 
