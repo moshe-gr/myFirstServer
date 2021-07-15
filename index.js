@@ -33,7 +33,7 @@ app.use('/api', (req, res, next) => {
 app.post('/api/faceDetect', faceDetectionControler.faceDetection);
 app.use('/api/users', userRouts);
 app.use('/api/interns', internRouts);
-app.use('/api/supervisors', supervisorRouts)
+app.use('/api/supervisors', supervisorRouts);
 app.use('/api/awsS3', awsRouts);
 app.use('/api/tests', testRouts);
 app.listen(port, console.log("Server up at port " + port));
