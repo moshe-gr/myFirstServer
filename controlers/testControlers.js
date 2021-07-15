@@ -131,13 +131,13 @@ function testControler() {
             return res.status(403).send({ msg: "denied" });
         }
         SupervisorModel.findById(req.params._id, { done: 1, _id: 0})
-            .populate({
-                path: 'done', populate: {
-                    path: 'intern', model: 'user', populate: {
-                        path: 'more_info', model: 'intern'
-                    }
+        .populate({
+            path: 'done', populate: {
+                path: 'intern', model: 'user', populate: {
+                    path: 'more_info', model: 'intern'
                 }
-            }).populate({ path: 'test', model: 'test' })
+            }
+        })
         .exec(
             (err, tests) => {
                 if (err) {
@@ -146,7 +146,12 @@ function testControler() {
                 if (!tests) {
                     return res.status(404).send({ msg: "not found" });
                 }
-                res.status(200).send(tests.done);
+                tests.populate('done.test', (err, testss) => {
+                    if (err) {
+                        return res.status(500).send(err);
+                    }
+                    res.status(200).send(testss.done);
+                });
             }
         );
     }
