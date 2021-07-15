@@ -90,11 +90,11 @@ function userControler() {
                 {
                     'professional.medical_institution': req.body.medical_institution
                 },
-                {},
+                { user: 1, _id: 0 },
                 { session }
             );
-            students.forEach(intern => {
-                newSupervisor.students.push(intern.user);
+            students.forEach(student => {
+                newSupervisor.students.push(student);
             });
             const newSuperDoc = await newSupervisor.save({ session });
             await UserModel.findByIdAndUpdate(
