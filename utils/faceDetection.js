@@ -1,6 +1,10 @@
 const vision = require('@google-cloud/vision');
 const client = new vision.ImageAnnotatorClient({
-    keyFilename: "C:/Users/LENOVO/myFirstServer/utils/effortless-edge-314610-4fd8e556e26f.json"
+    projectId: "effortless-edge-314610",
+    credentials: {
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        client_email: process.env.GOOGLE_CLIENT_EMAIL
+    }
 });
 
 async function detectFaces(inputFile) {
