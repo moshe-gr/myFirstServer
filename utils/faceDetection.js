@@ -1,7 +1,5 @@
 const vision = require('@google-cloud/vision');
-const client = new vision.ImageAnnotatorClient({
-    keyFilename: "C:/Users/LENOVO/myFirstServer/utils/effortless-edge-314610-4fd8e556e26f.json"
-});
+const client = new vision.ImageAnnotatorClient();
 
 async function detectFaces(inputFile) {
     // Make a call to the Vision API to detect the faces
