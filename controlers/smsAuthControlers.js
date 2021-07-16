@@ -2,8 +2,8 @@ const Nexmo = require('nexmo');
 const UserToken = require('../models/userToken.js');
 const UserModel = require('../models/userSchema.js');
 const nexmo = new Nexmo({
-  apiKey: "f7b12139",
-  apiSecret: "LOzFDfpg4FkK8gPS"
+  apiKey: process.env.VONAGE_API_KEY,
+  apiSecret: process.env.VONAGE_API_SECRET
 });
 
 function smsAuthControler() {
