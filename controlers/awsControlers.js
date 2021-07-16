@@ -31,7 +31,7 @@ function filesController() {
     if (req.user > 2) {
       return res.status(403).send({ msg: 'request denied' });
     }
-    new S3().deleteObject(
+    new S3(s3Config).deleteObject(
       { Key: req.params.name, Bucket: 'moshefirstbucket' },
       (err, data) => {
         if (err) {
