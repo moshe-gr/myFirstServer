@@ -4,8 +4,8 @@ const awsSetup = require('../utils/awsSetup');
 
 
 const s3Config = {
-    accessKey: 'AKIAX2DRX3BIPPPRS67J',
-    secretKey: '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',
+    accessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    secretKey: process.env.AWS_ACCESS_KEY_ID,
     bucket: 'moshefirstbucket',
     region: 'eu-central-1'
   };
