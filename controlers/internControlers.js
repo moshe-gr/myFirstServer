@@ -5,6 +5,48 @@ const mongoose = require('mongoose');
 
 function internControler() {
 
+    async function createIntern(req, res) {
+        const session = await mongoose.startSession();
+        try {
+            session.startTransaction();
+            if(!req.body.user) {
+                return res.status(400).send({ msg: "id missing" });
+            }
+            const newIntern = new InternModel(req.body);
+            const tasks = await SupervisorModel.find(
+                { medical_institution: req.body.professional.medical_institution },
+                { tasks: 1, _id: 0 },
+                { session }
+            );
+            tasks.forEach(
+                task => task.tasks.forEach(
+                    task => newIntern.tasks.push(task)
+                )
+            );
+            await SupervisorModel.updateMany(
+                { medical_institution: req.body.professional.medical_institution },
+                { $push: { students: req.body.user } },
+                { session }
+            );
+            const newIntDoc = await newIntern.save({ session });
+            await UserModel.findByIdAndUpdate(
+                req.body.user,
+                { $set: { more_info: newIntDoc._id } },
+                { session }
+            );
+            await session.commitTransaction();
+            res.status(201).send(newIntDoc);
+        }
+        catch (err) {
+            await session.abortTransaction();
+            res.status(500).send({ msg: err });
+            session.endSession();
+        }
+        finally {
+            session.endSession();
+        }
+    }
+
     async function updateIntern(req, res) {
         const session = await mongoose.startSession();
         session.startTransaction();
@@ -49,24 +91,6 @@ function internControler() {
         }
     }
 
-    function deleteIntern(req, res) {
-        InternModel.findByIdAndDelete(req.body._id, (err, result) => {
-            if (err) {
-                return res.status(500).send(err);
-            }
-            UserModel.findByIdAndUpdate(req.params._id, { $unset: { internInfo: 1 } }, (err, result, res) => {
-                if (err) {
-                    return res.status(500).send(err);
-                }
-            });
-            SupervisorModel.updateMany(
-                { medical_institution: req.body.intern_info.professional.medical_institution },
-                { $pull: { students: req.body.intern_info.user } }
-            );
-            res.status(200).send(result);
-        });
-    }
-
     function getIntern(req, res) {
         InternModel.findById(req.params._id, (err, intern) => {
             if (err) {
@@ -78,21 +102,11 @@ function internControler() {
             res.status(200).send(intern);
         });
     }
-
-    function getAll(req, res) {
-        InternModel.find((err, internList) => {
-            if (err) {
-                return res.status(500).send(err);
-            }
-            res.status(200).send(internList);
-        })
-    }
     
     return {
+        createIntern,
         updateIntern,
-        deleteIntern,
-        getIntern,
-        getAll
+        getIntern
     }
 }
 

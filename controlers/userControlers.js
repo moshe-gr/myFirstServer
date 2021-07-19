@@ -77,93 +77,13 @@ function userControler() {
             res.status(200).send(userList);
         });
     }
-
-    async function createSupervisor(req, res) {
-        const session = await mongoose.startSession();
-        try {
-            session.startTransaction();
-            if (!req.body.medical_institution || !req.body.user) {
-                return res.status(400).send({ msg: "Missing data" });
-            }
-            const newSupervisor = new SupervisorModel(req.body);
-            const students = await InternModel.find(
-                {
-                    'professional.medical_institution': req.body.medical_institution
-                },
-                { user: 1, _id: 0 },
-                { session }
-            );
-            students.forEach(student => {
-                newSupervisor.students.push(student);
-            });
-            const newSuperDoc = await newSupervisor.save({ session });
-            await UserModel.findByIdAndUpdate(
-                req.body.user,
-                { $set: { more_info: newSuperDoc._id } },
-                { session }
-            );
-            await session.commitTransaction();
-            res.status(201).send(newSuperDoc);
-        }
-        catch (err) {
-            await session.abortTransaction();
-            res.status(500).send({ msg: err });
-        }
-        finally {
-            session.endSession();            
-        }
-    }
-
-    async function createIntern(req, res) {
-        const session = await mongoose.startSession();
-        try {
-            session.startTransaction();
-            if(!req.body.user) {
-                return res.status(400).send({ msg: "id missing" });
-            }
-            const newIntern = new InternModel(req.body);
-            const tasks = await SupervisorModel.find(
-                { medical_institution: req.body.professional.medical_institution },
-                { tasks: 1, _id: 0 },
-                { session }
-            );
-            tasks.forEach(
-                task => task.tasks.forEach(
-                    task => newIntern.tasks.push(task)
-                )
-            );
-            await SupervisorModel.updateMany(
-                { medical_institution: req.body.professional.medical_institution },
-                { $push: { students: req.body.user } },
-                { session }
-            );
-            const newIntDoc = await newIntern.save({ session });
-            await UserModel.findByIdAndUpdate(
-                req.body.user,
-                { $set: { more_info: newIntDoc._id } },
-                { session }
-            );
-            await session.commitTransaction();
-            res.status(201).send(newIntDoc);
-        }
-        catch (err) {
-            await session.abortTransaction();
-            res.status(500).send({ msg: err });
-            session.endSession();
-        }
-        finally {
-            session.endSession();
-        }
-    }
     
     return {
         createUser,
         updateUser,
         deleteUser,
         getUser,
-        getAll,
-        createSupervisor,
-        createIntern
+        getAll
     }
 }
 
