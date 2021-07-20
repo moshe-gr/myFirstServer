@@ -1,6 +1,7 @@
 const UserModel = require('../models/userSchema.js');
 const SupervisorModel = require('../models/supervisorSchema.js');
 const InternModel = require('../models/internSchema.js');
+const TestModel = require('../models/testSchema.js');
 const mongoose = require('mongoose');
 
 function userControler() {
@@ -34,16 +35,50 @@ function userControler() {
         );
     }
 
-    function deleteUser(req, res) {
-        UserModel.deleteOne(
-            { _id: req.params._id },
-            (err) => {
-                if (err) {
-                    return res.status(500).send(err);
-                }
-                res.status(200).send({ msg: "deleted successfully" });
+    async function deleteUser(req, res) {
+        const session = await mongoose.startSession();
+        try {
+            session.startTransaction();
+            const deletedDoc = await UserModel.findOneAndDelete(
+                { _id: req.params._id },
+                { session }
+            );
+            if (deletedDoc.role == "intern") {
+                await InternModel.deleteOne(
+                    { user: deletedDoc._id },
+                    { session }
+                );
+                await SupervisorModel.updateMany(
+                    { students: req.params._id },
+                    { $pull: { students: req.params._id } },
+                    { session }
+                );
             }
-        );
+            else if (deletedDoc.role == "supervisor") {
+                const deleteSuper = await SupervisorModel.findOneAndDelete(
+                    { user: deletedDoc._id },
+                    { session }
+                );
+                await TestModel.deleteMany(
+                    { _id: { $in: deleteSuper.tasks } },
+                    { session }
+                );
+                await InternModel.updateMany(
+                    { user: { $in: deleteSuper.students } },
+                    { $pullAll: { tasks: deleteSuper.tasks } },
+                    { session }
+                );
+            }
+            await session.commitTransaction();
+            res.status(200).send({ msg: "deleted successfully" });
+        }
+        catch (err) {
+            await session.abortTransaction();
+            res.status(500).send({ msg: err });
+        }
+        finally {
+            session.endSession();
+        }
     }
 
     function getUser(req, res) {
