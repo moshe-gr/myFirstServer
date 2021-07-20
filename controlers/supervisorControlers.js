@@ -21,7 +21,7 @@ function supervisorControler() {
                 { session }
             );
             students.forEach(student => {
-                newSupervisor.students.push(student);
+                newSupervisor.students.push(student.user);
             });
             const newSuperDoc = await newSupervisor.save({ session });
             await UserModel.findByIdAndUpdate(
